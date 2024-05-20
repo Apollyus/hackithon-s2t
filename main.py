@@ -3,6 +3,7 @@ from openai import OpenAI
 
 client = OpenAI(api_key="sk-proj-dz3nLvTaPgYDBngaMe0qT3BlbkFJEdS7Ltcn9wGgUsFRdsBt")
 
+# Open the audio file, place here address of your audio file
 audio_file = open("C:\\aaa_programovai_kodovani\\python_projekty\\trenovani\\hacktion-speech-to-text\\samples\\zaznam-test.m4a", "rb")
 transcription = client.audio.transcriptions.create(
   model="whisper-1", 
