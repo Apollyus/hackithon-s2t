@@ -8,7 +8,8 @@ CORS(app)  # enable CORS for all routes
 
 @app.route('/')
 def home():
-    client = OpenAI(api_key="sk-proj-xyp7YNkatNWb5XqMQm3lT3BlbkFJrXRw0kB4gyDcoBNhifhG")
+    # sk-proj-xyp7YNkatNWb5XqMQm3lT3BlbkFJrXRw0kB4gyDcoBNhifhG
+    client = OpenAI(api_key="")
 
     # Open the audio file, place here address of your audio file
     audio_file = open("C:\\aaa_programovai_kodovani\\python_projekty\\trenovani\\hacktion-speech-to-text\\samples\\zaznam-test.m4a", "rb")
