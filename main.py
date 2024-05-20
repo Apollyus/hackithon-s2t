@@ -1,7 +1,7 @@
 import json
 from openai import OpenAI
 
-client = OpenAI(api_key="sk-proj-dz3nLvTaPgYDBngaMe0qT3BlbkFJEdS7Ltcn9wGgUsFRdsBt")
+client = OpenAI(api_key="sk-proj-SArtWN6buNJbhvvNcZltT3BlbkFJKuKAIvUgaZJXBOON4qX9")
 
 # Open the audio file, place here address of your audio file
 audio_file = open("C:\\aaa_programovai_kodovani\\python_projekty\\trenovani\\hacktion-speech-to-text\\samples\\zaznam-test.m4a", "rb")
