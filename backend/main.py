@@ -8,7 +8,6 @@ CORS(app)  # enable CORS for all routes
 
 @app.route('/')
 def home():
-    # sk-proj-xyp7YNkatNWb5XqMQm3lT3BlbkFJrXRw0kB4gyDcoBNhifhG
     client = OpenAI(api_key="")
 
     # Open the audio file, place here address of your audio file
