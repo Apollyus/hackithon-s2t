@@ -7,6 +7,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const fileSelectedHandler = event => {
+    setSelectedFile(event.target.files[0]);
     const file = event.target.files[0];
     const validMimeTypes = ['audio/mpeg', 'audio/mp4'];
 
@@ -41,7 +42,9 @@ function App() {
   };
 
   const fetchTranscription = (filename) => {
-    // Your existing fetchTranscription code here...
+    fetch(`http://127.0.0.1:8000/transcribe/${filename}`)
+      .then(response => response.json())
+      .then(data => setData(data));
   };
 
   return (
@@ -49,7 +52,7 @@ function App() {
       <input type="file" accept="audio/mpeg, audio/mp4" onChange={fileSelectedHandler} />
       <button onClick={fileUploadHandler}>Upload</button>
       {isLoading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
+      {error && <p className="text-red-500 bg-red-100 p-2 rounded">{error}</p>}
       {data && <p>{data.text}</p>}
     </div>
   );
