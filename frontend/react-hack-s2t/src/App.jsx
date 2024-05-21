@@ -58,6 +58,24 @@ function App() {
       body: formData,
     })
     .then(response => response.json())
+    .then(data => {
+      // Call the transcription endpoint after the file has been uploaded
+      fetchTranscription(data.filename);
+    })
+    .finally(() => setIsLoading(false)); // end loading
+  };
+
+  const fetchTranscription = (filename) => {
+    fetch(`http://127.0.0.1:8000/transcribe/${filename}`)
+      .then(response => response.json())
+      .then(data => {
+        setData(data);
+        setTranscriptionSuccess(true); // set transcriptionSuccess to true here
+      })
+      .catch(() => {
+        setError('Transcription failed. Please try again.');
+        setTranscriptionSuccess(false);
+      });
     // ... rest of your code
   };
 
