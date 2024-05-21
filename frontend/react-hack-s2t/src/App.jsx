@@ -30,7 +30,7 @@ function App() {
 
   return (
     <div>
-      <input type="file" onChange={fileSelectedHandler} />
+      <input type="file" accept="audio/mpeg, audio/mp4" onChange={fileSelectedHandler} />
       <button onClick={fileUploadHandler}>Upload</button>
       {data && <pre>{data.text}</pre>}
     </div>
