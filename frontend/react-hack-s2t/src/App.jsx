@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 function App() {
   const [data, setData] = useState(null);
@@ -16,14 +16,17 @@ function App() {
       body: formData,
     })
     .then(response => response.json())
-    .then(data => setData(data));
+    .then(data => {
+      // Call the transcription endpoint after the file has been uploaded
+      fetchTranscription(data.filename);
+    });
   };
 
-  useEffect(() => {
-    fetch('http://127.0.0.1:8000/') // replace with the URL of your Python app
+  const fetchTranscription = (filename) => {
+    fetch(`http://127.0.0.1:8000/transcribe/${filename}`)
       .then(response => response.json())
       .then(data => setData(data));
-  }, []);
+  };
 
   return (
     <div>
