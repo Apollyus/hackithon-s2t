@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,11 +14,17 @@ origins = ["*"]
 app.add_middleware(CORSMiddleware, allow_origins=origins,
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
+
+# Initialize the OpenAI client by putting secret API key
 client = OpenAI(api_key="")
 
 class Transcription(BaseModel):
     model: str
     file: str
+
+@app.get("/")
+def redirect_to_existing_endpoint():
+    return RedirectResponse(url='/transcribe')
 
 @app.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
