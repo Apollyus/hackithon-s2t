@@ -5,6 +5,7 @@ function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [transcriptionSuccess, setTranscriptionSuccess] = useState(false);
 
   const fileSelectedHandler = event => {
     setSelectedFile(event.target.files[0]);
@@ -44,7 +45,14 @@ function App() {
   const fetchTranscription = (filename) => {
     fetch(`http://127.0.0.1:8000/transcribe/${filename}`)
       .then(response => response.json())
-      .then(data => setData(data));
+      .then(data => {
+        setData(data);
+        setTranscriptionSuccess(true); // set transcriptionSuccess to true here
+      })
+      .catch(() => {
+        setError('Transcription failed. Please try again.');
+        setTranscriptionSuccess(false);
+      });
   };
 
   return (
@@ -53,8 +61,10 @@ function App() {
       <button onClick={fileUploadHandler}>Upload</button>
       {isLoading && <p>Loading...</p>}
       {error && <p className="text-red-500 bg-red-100 p-2 rounded">{error}</p>}
+      {transcriptionSuccess && <p className="text-green-500 bg-green-100 p-2 rounded">Transcription was successful!</p>}
       {data && <p>{data.text}</p>}
     </div>
   );
 }
+
 export default App;
