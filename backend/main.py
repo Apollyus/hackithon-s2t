@@ -9,13 +9,15 @@ origins = ["*"]
 
 app.add_middleware(CORSMiddleware, allow_origins=origins)
 
+client = OpenAI(api_key="")
+
 class Transcription(BaseModel):
     model: str
     file: str
 
 @app.get('/')
 async def home():
-    client = OpenAI(api_key="")
+    
 
     # Open the audio file, place here address of your audio file
     audio_file = open("C:\\aaa_programovai_kodovani\\python_projekty\\trenovani\\hacktion-speech-to-text\\samples\\test.m4a", "rb")
@@ -27,5 +29,26 @@ async def home():
     # Convert the transcription object to a dictionary
     dict_output = transcription.to_dict()
 
+    # Post-process the text output
+    system_prompt = "You are bot that repairs transcripted voice to text. The provided text may have some misspellings which you have to repair, but do not force it to change. If you do not know what's that, just leave it alone. Most of provided text is in czech."
+    dict_output['text'] = generate_corrected_transcript(0, system_prompt, dict_output['text'])
+
     # Return the dictionary as a FastAPI response
     return dict_output
+
+def generate_corrected_transcript(temperature, system_prompt, transcribed_text):
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        temperature=temperature,
+        messages=[
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
+                "role": "user",
+                "content": transcribed_text
+            }
+        ]
+    )
+    return response.choices[0].message.content
