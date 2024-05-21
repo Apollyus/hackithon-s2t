@@ -6,12 +6,12 @@ function App() {
   useEffect(() => {
     fetch('http://127.0.0.1:8000/') // replace with the URL of your Python app
       .then(response => response.json())
-      .then(data => setData(data));
+      .then(data => setData(JSON.parse(data)));
   }, []);
 
   return (
     <div>
-      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+      {data && <pre>{data.text}</pre>}
     </div>
   );
 }

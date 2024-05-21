@@ -16,10 +16,10 @@ class Transcription(BaseModel):
 
 @app.get('/')
 async def home():
-    client = OpenAI(api_key="sk-proj-8ihZYyihRtEkUUzYfm09T3BlbkFJzb7MVi8JzZEkwjbRP4pe")
+    client = OpenAI(api_key="")
 
     # Open the audio file, place here address of your audio file
-    audio_file = open("C:\\aaa_programovai_kodovani\\python_projekty\\trenovani\\hacktion-speech-to-text\\samples\\zaznam-test.m4a", "rb")
+    audio_file = open("C:\\aaa_programovai_kodovani\\python_projekty\\trenovani\\hacktion-speech-to-text\\samples\\test.m4a", "rb")
     transcription = client.audio.transcriptions.create(
       model="whisper-1", 
       file=audio_file
