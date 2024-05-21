@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
+
 
 app = FastAPI()
 
@@ -30,7 +33,7 @@ async def home():
     dict_output = transcription.to_dict()
 
     # Post-process the text output
-    system_prompt = "You are bot that repairs transcripted voice to text. The provided text may have some misspellings which you have to repair, but do not force it to change. If you do not know what's that, just leave it alone. Most of provided text is in czech."
+    system_prompt = "You are bot that repairs transcripted voice to text. The provided text may have some misspellings which you have to repair, but do not force it to change. If you do not know what's that, just leave it alone. Most of provided text is in czech. Do not forget interpunction and special characters"
     dict_output['text'] = generate_corrected_transcript(0, system_prompt, dict_output['text'])
 
     # Return the dictionary as a FastAPI response
@@ -52,3 +55,15 @@ def generate_corrected_transcript(temperature, system_prompt, transcribed_text):
         ]
     )
     return response.choices[0].message.content
+
+@app.post("/upload/")
+async def upload_file(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        # Now you can use the contents of the file
+        # For example, you can save it to a file
+        with open(file.filename, "wb") as f:
+            f.write(contents)
+        return {"filename": file.filename}
+    except Exception as e:
+        return JSONResponse(status_code=400, detail=str(e))
