@@ -1,14 +1,22 @@
-from flask import Flask, jsonify
-from flask_cors import CORS  # import the flask_cors module
-import json
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from openai import OpenAI
+import json
 
-app = Flask(__name__)
-CORS(app)  # enable CORS for all routes
+origins = ["*"]
 
-@app.route('/')
-def home():
-    client = OpenAI(api_key="")
+app = FastAPI()
+
+app.add_middleware(CORSMiddleware, allow_origins=origins)
+
+class Transcription(BaseModel):
+    model: str
+    file: str
+
+@app.get('/')
+async def home():
+    client = OpenAI(api_key="sk-proj-8ihZYyihRtEkUUzYfm09T3BlbkFJzb7MVi8JzZEkwjbRP4pe")
 
     # Open the audio file, place here address of your audio file
     audio_file = open("C:\\aaa_programovai_kodovani\\python_projekty\\trenovani\\hacktion-speech-to-text\\samples\\zaznam-test.m4a", "rb")
@@ -20,8 +28,5 @@ def home():
     # Convert the transcription object to a dictionary, then to a JSON string
     json_output = json.dumps(transcription.to_dict(), ensure_ascii=False)
 
-    # Return the JSON output as a Flask response
-    return jsonify(json_output)
-
-if __name__ == '__main__':
-    app.run(port=5000)
+    # Return the JSON output as a FastAPI response
+    return json_output

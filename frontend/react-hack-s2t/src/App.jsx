@@ -4,7 +4,7 @@ function App() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000') // replace with the URL of your Python app
+    fetch('http://127.0.0.1:8000/') // replace with the URL of your Python app
       .then(response => response.json())
       .then(data => setData(data));
   }, []);
