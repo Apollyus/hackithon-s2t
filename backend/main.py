@@ -2,11 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
-import json
-
-origins = ["*"]
 
 app = FastAPI()
+
+origins = ["*"]
 
 app.add_middleware(CORSMiddleware, allow_origins=origins)
 
@@ -25,8 +24,8 @@ async def home():
       file=audio_file
     )
 
-    # Convert the transcription object to a dictionary, then to a JSON string
-    json_output = json.dumps(transcription.to_dict(), ensure_ascii=False)
+    # Convert the transcription object to a dictionary
+    dict_output = transcription.to_dict()
 
-    # Return the JSON output as a FastAPI response
-    return json_output
+    # Return the dictionary as a FastAPI response
+    return dict_output
