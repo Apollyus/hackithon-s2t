@@ -13,7 +13,13 @@ function App() {
   const startRecording = () => {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then(stream => {
-        mediaRecorder.current = new MediaRecorder(stream);
+        if (!MediaRecorder.isTypeSupported('audio/webm')) {
+          alert('Audio format not supported');
+          return;
+        }
+
+        mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+        
         mediaRecorder.current.start();
 
         const audioChunks = [];
@@ -22,7 +28,7 @@ function App() {
         });
 
         mediaRecorder.current.addEventListener('stop', () => {
-          const audioBlob = new Blob(audioChunks);
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
           setSelectedFile(audioBlob); // set selectedFile with the recorded audio
@@ -40,29 +46,45 @@ function App() {
     }
   };
 
+  const saveRecording = () => {
+    const formData = new FormData();
+    formData.append('file', selectedFile, 'recording.webm');
+  
+    fetch('/upload-endpoint/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+  };
+
   const fileSelectedHandler = event => {
     setSelectedFile(event.target.files[0]);
   };
 
   const fileUploadHandler = () => {
     if (!selectedFile) {
-      setError('No file selected. Please select a valid file.');
+      setError('No file recorded. Please record a valid file.');
       return;
     }
-
+  
     setIsLoading(true); // start loading
     const formData = new FormData();
     formData.append('file', selectedFile); // appending file
-    fetch('http://127.0.0.1:8000/upload', {
+    fetch('http://127.0.0.1:8000/upload-react-app', {
       method: 'POST',
       body: formData,
     })
     .then(response => response.json())
     .then(data => {
-      // Call the transcription endpoint after the file has been uploaded
       fetchTranscription(data.filename);
+      setIsLoading(false);
     })
-    .finally(() => setIsLoading(false)); // end loading
+    .catch(error => {
+      setError('An error occurred while uploading the file.');
+      setIsLoading(false);
+    });
   };
 
   const fetchTranscription = (filename) => {
@@ -84,6 +106,7 @@ function App() {
       <button onClick={recording ? stopRecording : startRecording}>
         {recording ? 'Stop Recording' : 'Start Recording'}
       </button>
+      <button onClick={fileUploadHandler}>Upload Recorded File</button>
       {audioURL && <audio src={audioURL} controls />}
       <input type="file" accept="audio/mpeg, audio/mp4" onChange={fileSelectedHandler} />
       <button onClick={fileUploadHandler}>Upload</button>

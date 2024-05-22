@@ -35,7 +35,7 @@ async def upload_file(file: UploadFile = File(...)):
             f.write(contents)
         return {"filename": file.filename}
     except Exception as e:
-        return JSONResponse(status_code=400, detail=str(e))
+        return JSONResponse(status_code=400, content=str(e))
 
 @app.get("/transcribe/{filename}")
 async def transcribe_file(filename: str):
@@ -54,7 +54,21 @@ async def transcribe_file(filename: str):
         # Return the transcription as a JSON response
         return JSONResponse(content=dict_output)
     except Exception as e:
-        return JSONResponse(status_code=400, detail=str(e))
+        return JSONResponse(status_code=400, content={"error": str(e)})
+    
+@app.post("/upload-react-app/")
+async def upload_file_from_react_app(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        # Check if the file format is supported
+        if file.filename.split('.')[-1] not in ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']:
+            return JSONResponse(status_code=400, content={"error": "Unsupported file format. Please upload a file in one of the following formats: 'flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm'"})
+        # Save the uploaded file
+        with open(file.filename, "wb") as f:
+            f.write(contents)
+        return {"filename": file.filename}
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
 
 
 
