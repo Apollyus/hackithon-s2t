@@ -31,7 +31,11 @@ function App() {
           const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
-          setSelectedFile(audioBlob); // set selectedFile with the recorded audio
+          
+          // Create a File from the Blob
+          const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
+          
+          setSelectedFile(audioFile); // set selectedFile with the recorded audio
           setAudioURL(audioUrl);
         });
 
