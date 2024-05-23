@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import './App.css';
+
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
