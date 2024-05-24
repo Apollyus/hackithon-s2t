@@ -11,11 +11,12 @@ from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-CLIENT_ID = "685328022387-3ird41n6oqrmg0csksu7ta58sevktttb.apps.googleusercontent.com"
-CLIENT_SECRET = "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"
-
+api_key = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
 
@@ -29,7 +30,7 @@ app.add_middleware(CORSMiddleware, allow_origins=origins,
 
 
 # Initialize the OpenAI client by putting secret API key
-client = OpenAI(api_key="")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class Transcription(BaseModel):
     model: str
