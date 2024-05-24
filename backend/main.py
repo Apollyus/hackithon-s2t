@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.responses import RedirectResponse
 from typing import List
@@ -13,6 +13,7 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import os
+import requests
 
 load_dotenv()
 
@@ -35,6 +36,10 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 class Transcription(BaseModel):
     model: str
     file: str
+
+    
+
+
 
 
 @app.post("/upload/")
@@ -80,6 +85,29 @@ async def upload_file_from_react_app(file: UploadFile = File(...)):
         return {"filename": file.filename}
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
+    
+@app.get("/api/tile/{tile_number}")
+async def get_tile(tile_number: int):
+    if 1 <= tile_number <= 32:
+        print(f"Accessed tile: {tile_number}")
+        # Replace this with the actual logic for each tile
+        return {"tile": tile_number}
+    else:
+        raise HTTPException(status_code=404, detail="Tile not found")
+
+
+response = requests.get(f'http://localhost:8000/transcribe/recording.webm')
+
+# The .json() method converts the JSON response to a Python dictionary
+data = response.json()
+
+# Endpoint for processing the key phrase
+@app.get("/proccess_teeth")
+async def get_tile():
+    if "citron" in data:
+        print("The phrase 'citron' is in the data.")
+    else:
+        print("The phrase 'citron' is not in the data.")
 
 
 
