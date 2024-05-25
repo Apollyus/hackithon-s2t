@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.responses import RedirectResponse
@@ -13,7 +14,7 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import os
-import requests
+import httpx
 
 load_dotenv()
 
@@ -29,18 +30,12 @@ origins = ["*"]
 app.add_middleware(CORSMiddleware, allow_origins=origins,
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
-
 # Initialize the OpenAI client by putting secret API key
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class Transcription(BaseModel):
     model: str
     file: str
-
-    
-
-
-
 
 @app.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
@@ -60,7 +55,7 @@ async def transcribe_file(filename: str):
         with open(filename, "rb") as audio_file:
             # Call the transcription endpoint
             transcription = client.audio.transcriptions.create(
-              model="whisper-1", 
+              model="whisper-1",
               file=audio_file
             )
 
@@ -71,7 +66,7 @@ async def transcribe_file(filename: str):
         return JSONResponse(content=dict_output)
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
-    
+
 @app.post("/upload-react-app/")
 async def upload_file_from_react_app(file: UploadFile = File(...)):
     try:
@@ -85,7 +80,7 @@ async def upload_file_from_react_app(file: UploadFile = File(...)):
         return {"filename": file.filename}
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
-    
+
 @app.get("/api/tile/{tile_number}")
 async def get_tile(tile_number: int):
     if 1 <= tile_number <= 32:
@@ -95,23 +90,22 @@ async def get_tile(tile_number: int):
     else:
         raise HTTPException(status_code=404, detail="Tile not found")
 
-
-response = requests.get(f'http://localhost:8000/transcribe/recording.webm')
-
-# The .json() method converts the JSON response to a Python dictionary
-data = response.json()
-
-# Endpoint for processing the key phrase
 @app.get("/proccess_teeth")
-async def get_tile():
-    if "citron" in data:
-        print("The phrase 'citron' is in the data.")
-    else:
-        print("The phrase 'citron' is not in the data.")
+async def process_teeth():
+    async with httpx.AsyncClient() as client:
+        response = await client.get('http://localhost:8000/transcribe/recording.webm')
+        data = response.json()
+        data_lower = data.lower()
 
+    variations = ["citrón", "citron", "cítron", "citrón.", "citron.", "cítron.", "Citröen", "Citröen.", "Citröen,", "citrón,", "citron,", "cítron,"]  # Add any other variations you want to check here
 
+    for variation in variations:
+        if variation in data_lower:
+            print(f"The phrase '{variation}' is in the data.")
+            return {"message": f"The phrase '{variation}' is in the data."}
 
-
+    print("None of the phrases are in the data.")
+    return {"message": "None of the phrases are in the data."}
 # Function that repairs the text of output before sending to frontend. It's using GPT-4o model.
 def generate_corrected_transcript(temperature, system_prompt, transcribed_text):
     response = client.chat.completions.create(
