@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.responses import RedirectResponse
@@ -95,17 +94,9 @@ async def process_teeth():
     async with httpx.AsyncClient() as client:
         response = await client.get('http://localhost:8000/transcribe/recording.webm')
         data = response.json()
-        data_lower = data.lower()
 
-    variations = ["citrón", "citron", "cítron", "citrón.", "citron.", "cítron.", "Citröen", "Citröen.", "Citröen,", "citrón,", "citron,", "cítron,"]  # Add any other variations you want to check here
+        return {"The phrase 'citron' is not in the data."}
 
-    for variation in variations:
-        if variation in data_lower:
-            print(f"The phrase '{variation}' is in the data.")
-            return {"message": f"The phrase '{variation}' is in the data."}
-
-    print("None of the phrases are in the data.")
-    return {"message": "None of the phrases are in the data."}
 # Function that repairs the text of output before sending to frontend. It's using GPT-4o model.
 def generate_corrected_transcript(temperature, system_prompt, transcribed_text):
     response = client.chat.completions.create(
