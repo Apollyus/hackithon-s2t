@@ -93,6 +93,29 @@ function App() {
     });
   };
 
+  // Add this function inside your App component
+const handleButtonClick = () => {
+    fetch('http://localhost:8000/proccess_teeth', {
+      method: 'GET', // or 'POST'
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': 'Bearer your-token' (if needed)
+      },
+      // body: JSON.stringify(data), (if you're sending data)
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  };
+  
+const multipleChoicesOcuravka = () => {
+    fileUploadHandler();
+    handleButtonClick();
+
+}
+
   const fetchTranscription = (filename) => {
     fetch(`http://127.0.0.1:8000/transcribe/${filename}`)
       .then(response => response.json())
@@ -112,7 +135,7 @@ function App() {
       <button onClick={recording ? stopRecording : startRecording}>
         {recording ? 'Stop Recording' : 'Start Recording'}
       </button>
-      <button onClick={fileUploadHandler}>Upload Recorded File</button>
+      <button onClick={multipleChoicesOcuravka}>Upload Recorded File</button>
       {audioURL && <audio src={audioURL} controls />}
       {isLoading && <p>Loading...</p>}
       {error && <p className="text-red-500 bg-red-100 p-2 rounded">{error}</p>}
